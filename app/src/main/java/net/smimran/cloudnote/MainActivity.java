@@ -70,9 +70,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawerLayout.addDrawerListener(toggle);
         toggle.syncState();
-
-
         setUpNavheader();
+
+        if (savedInstanceState == null) {
+            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new AllNote()).commit();
+            navigationView.setCheckedItem(R.id.allNote_nav);
+        }
     }
 
     @Override
@@ -91,31 +94,23 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         switch (item.getItemId()) {
             case R.id.signOut_nav:
-                Toast.makeText(this, "Sign out", Toast.LENGTH_SHORT).show();
+                Snackbar snackbar = Snackbar.make(drawerLayout, "Sign out completed", Snackbar.LENGTH_LONG);
+                snackbar.show();
+                AuthUI.getInstance().signOut(MainActivity.this).addOnCompleteListener(new OnCompleteListener <Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task <Void> task) {
+                        startActivity(new Intent(MainActivity.this, LoginActivity.class));
+                        finish();
+                    }
+                });
                 break;
-//            case R.id.signoutID:
-//                Snackbar snackbar = Snackbar
-//                        .make(drawerLayout, "Sign out completed", Snackbar.LENGTH_LONG);
-//                snackbar.show();
-//                AuthUI.getInstance()
-//                        .signOut(MainActivity.this)
-//                        .addOnCompleteListener(new OnCompleteListener<Void>() {
-//                            @Override
-//                            public void onComplete(@NonNull Task<Void> task) {
-//                                startActivity(new Intent(MainActivity.this, LoginSActivity.class));
-//                                finish();
-//                            }
-//                        });
-//                break;
-//
-//            case R.id.addNoteID:
-//                callAddActivity((View) item.getActionView());
-//                break;
-//
-//            case R.id.allNoteID:
-//                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new AllNotes()).commit();
-//                navigationView.setCheckedItem(R.id.allNoteID);
-//                break;
+            case R.id.addNote_nav:
+                callAddActivity((View) item.getActionView());
+                break;
+            case R.id.allNote_nav:
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new AllNote()).commit();
+                navigationView.setCheckedItem(R.id.allNote_nav);
+                break;
 //
 //            case R.id.categoriesID:
 //                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new Categories()).commit();
@@ -152,7 +147,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     public void loadCategoryNameintoCategoriesList() {
         FirebaseUser user = auth.getCurrentUser();
-        db.collection(user.getUid()).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+        db.collection(user.getUid()).get().addOnSuccessListener(new OnSuccessListener <QuerySnapshot>() {
             int dontAdd;
 
             @Override
