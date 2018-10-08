@@ -19,10 +19,13 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 
@@ -38,6 +41,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
 
     public static ArrayList <String> categoriesList = new ArrayList <String>();
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        loadCategoryNameintoCategoriesList();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        loadCategoryNameintoCategoriesList();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -126,5 +141,40 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         nameNav.setText(user.getDisplayName());
         emailNav.setText(user.getEmail());
         Glide.with(this).load(user.getPhotoUrl()).into(profile);
+    }
+
+    public void callAddActivity(View view) {
+        FirebaseUser user = auth.getCurrentUser();
+        Intent intent = new Intent(getApplicationContext(), AddNoteActivity.class);
+        intent.putExtra("USERID", user.getUid());
+        startActivity(intent);
+    }
+
+    public void loadCategoryNameintoCategoriesList() {
+        FirebaseUser user = auth.getCurrentUser();
+        db.collection(user.getUid()).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+            int dontAdd;
+
+            @Override
+            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                for (DocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
+
+                    Note note = documentSnapshot.toObject(Note.class);
+
+                    dontAdd = 0;
+
+                    for (int i = 0; i < MainActivity.categoriesList.size(); i++) {
+                        if (MainActivity.categoriesList.get(i).toLowerCase().trim().equals(note.getCategory().toLowerCase().trim())) {
+                            dontAdd = 1;
+                            break;
+                        }
+                    }
+
+                    if (dontAdd == 0) {
+                        MainActivity.categoriesList.add(note.getCategory().trim());
+                    }
+                }
+            }
+        });
     }
 }
