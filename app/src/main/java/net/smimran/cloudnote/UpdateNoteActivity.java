@@ -10,22 +10,25 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.firestore.SetOptions;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 
-public class AddNoteActivity extends AppCompatActivity {
+public class UpdateNoteActivity extends AppCompatActivity {
+
+    String noteid, createdate;
 
     AutoCompleteTextView category;
     EditText description;
@@ -38,25 +41,40 @@ public class AddNoteActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_add_note);
+        setContentView(R.layout.activity_update_note);
+
+        noteid = getIntent().getStringExtra("NOTEID");
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_close);
-        setTitle("Note");
+        setTitle("Update Note");
 
         auth = FirebaseAuth.getInstance();
 
         category = findViewById(R.id.category);
         description = findViewById(R.id.description);
 
+        setLayout();
+
         linearLayout = (LinearLayout) findViewById(R.id.add_note_layout);
 
+    }
 
-        String[] categoryStr = MainActivity.categoriesList.toArray(new String[MainActivity.categoriesList.size()]);
-        ArrayAdapter <String> adapter = new ArrayAdapter <String>(this, android.R.layout.simple_list_item_1, android.R.id.text1, categoryStr);
-        category.setAdapter(adapter);
 
+    public void setLayout() {
+        FirebaseUser user = auth.getCurrentUser();
+        db.document(user.getUid() + "/" + noteid).
+                get().addOnSuccessListener(new OnSuccessListener <DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                Note note = documentSnapshot.toObject(Note.class);
+
+                category.setText(note.getCategory());
+                description.setText(note.getDescription());
+                createdate = note.getCreated_at();
+            }
+        });
     }
 
     @Override
@@ -70,7 +88,7 @@ public class AddNoteActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.saveNoteID:
-                saveNote();
+                updateNote();
                 return true;
             case android.R.id.home:
                 finish();
@@ -81,9 +99,10 @@ public class AddNoteActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private void saveNote() {
-        String categoryStr = category.getText().toString();
+
+    public void updateNote() {
         String descriptionStr = description.getText().toString();
+        String categoryStr = category.getText().toString();
         String date = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault()).format(new Date());
 
         if (categoryStr.trim().isEmpty() || descriptionStr.trim().isEmpty()) {
@@ -91,13 +110,19 @@ public class AddNoteActivity extends AppCompatActivity {
             return;
         }
 
-        FirebaseUser user = auth.getCurrentUser();
+        Map<String,Object> note = new HashMap <>();
+        note.put("category",categoryStr);
+        note.put("description",descriptionStr);
+        note.put("update_at",date);
 
-        CollectionReference notebookRef = FirebaseFirestore.getInstance().collection(user.getUid());
-        notebookRef.add(new Note(categoryStr, descriptionStr, date, null));
-        Toast.makeText(this, "Note added", Toast.LENGTH_SHORT).show();
+
+        FirebaseUser user = auth.getCurrentUser();
+        db.document(user.getUid() + "/" + noteid).update(note);
+
+        Toast.makeText(this,"Note updted",Toast.LENGTH_SHORT).show();
         finish();
     }
 
-
 }
+
+
