@@ -111,11 +111,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new AllNote()).commit();
                 navigationView.setCheckedItem(R.id.allNote_nav);
                 break;
-//
-//            case R.id.categoriesID:
-//                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new Categories()).commit();
-//                navigationView.setCheckedItem(R.id.categoriesID);
-//                break;
+            case R.id.categories_nav:
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new Categories()).commit();
+                navigationView.setCheckedItem(R.id.categories_nav);
+                break;
         }
 
         drawerLayout.closeDrawer(GravityCompat.START);
