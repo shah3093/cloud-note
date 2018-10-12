@@ -1,6 +1,9 @@
 package net.smimran.cloudnote;
 
+import android.content.Context;
+import android.content.Intent;
 import android.support.annotation.NonNull;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -8,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -19,8 +23,11 @@ public class CategoriesAdapter extends RecyclerView.Adapter <CategoriesAdapter.C
 
     private ArrayList <Map <String, Object>> categoryDataA;
 
-    public CategoriesAdapter(ArrayList <Map <String, Object>> categoryDataA) {
+    Context context;
+
+    public CategoriesAdapter(Context context, ArrayList <Map <String, Object>> categoryDataA) {
         this.categoryDataA = categoryDataA;
+        this.context = context;
     }
 
     @NonNull
@@ -31,10 +38,18 @@ public class CategoriesAdapter extends RecyclerView.Adapter <CategoriesAdapter.C
     }
 
     @Override
-    public void onBindViewHolder(@NonNull CategoryHolder categoryHolder, int i) {
+    public void onBindViewHolder(@NonNull final CategoryHolder categoryHolder, int i) {
         categoryDatatmpA = categoryDataA.get(i);
         categoryHolder.category.setText(categoryDatatmpA.get("category").toString());
-        categoryHolder.noteItem.setText(categoryDatatmpA.get("numberofnote").toString());
+
+        categoryHolder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String data = categoryHolder.category.getText().toString();
+
+                ((MainActivity)context).callCategoryFragment(data);
+            }
+        });
     }
 
     @Override
@@ -44,14 +59,11 @@ public class CategoriesAdapter extends RecyclerView.Adapter <CategoriesAdapter.C
 
     class CategoryHolder extends RecyclerView.ViewHolder {
 
-        TextView category, noteItem;
-        ImageButton viewDetails;
+        TextView category;
 
         public CategoryHolder(@NonNull View itemView) {
             super(itemView);
             category = itemView.findViewById(R.id.categoriesTitle_ID);
-            noteItem = itemView.findViewById(R.id.noteNumberID);
-            viewDetails = itemView.findViewById(R.id.viewDetailsID);
         }
     }
 }
