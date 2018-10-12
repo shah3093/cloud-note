@@ -33,7 +33,7 @@ public class NoteAdapter extends FirestoreRecyclerAdapter <Note, NoteAdapter.Not
     }
 
     @Override
-    protected void onBindViewHolder(@NonNull NoteHolder holder, final int position, @NonNull Note model){
+    protected void onBindViewHolder(@NonNull final NoteHolder holder, final int position, @NonNull Note model){
         holder.category.setText(model.getCategory());
         holder.description.setText(model.getDescription());
         holder.createdate.setText(model.getCreated_at());
@@ -61,6 +61,14 @@ public class NoteAdapter extends FirestoreRecyclerAdapter <Note, NoteAdapter.Not
 
                 AlertDialog alert11 = builder1.create();
                 alert11.show();
+            }
+        });
+
+        holder.category.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String data = holder.category.getText().toString();
+                ((MainActivity)context).callCategoryFragment(data);
             }
         });
 

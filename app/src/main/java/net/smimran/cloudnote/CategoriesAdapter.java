@@ -2,6 +2,7 @@ package net.smimran.cloudnote;
 
 import android.content.Context;
 import android.content.Intent;
+import android.provider.SyncStateContract;
 import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.RecyclerView;
@@ -10,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -42,12 +44,23 @@ public class CategoriesAdapter extends RecyclerView.Adapter <CategoriesAdapter.C
         categoryDatatmpA = categoryDataA.get(i);
         categoryHolder.category.setText(categoryDatatmpA.get("category").toString());
 
+        ViewGroup.MarginLayoutParams marginLayoutParams =
+                (ViewGroup.MarginLayoutParams) categoryHolder.itemView.getLayoutParams();
+
+        if(((i+1) % 2) == 0){
+            marginLayoutParams.setMargins(35,35,35,0);
+        }else{
+            marginLayoutParams.setMargins(35,35,0,0);
+        }
+
+        categoryHolder.itemView.setLayoutParams(marginLayoutParams);
+        categoryHolder.itemView.requestLayout();
+
         categoryHolder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 String data = categoryHolder.category.getText().toString();
-
-                ((MainActivity)context).callCategoryFragment(data);
+                ((MainActivity) context).callCategoryFragment(data);
             }
         });
     }
@@ -59,7 +72,7 @@ public class CategoriesAdapter extends RecyclerView.Adapter <CategoriesAdapter.C
 
     class CategoryHolder extends RecyclerView.ViewHolder {
 
-        TextView category;
+        TextView category,textView;
 
         public CategoryHolder(@NonNull View itemView) {
             super(itemView);
