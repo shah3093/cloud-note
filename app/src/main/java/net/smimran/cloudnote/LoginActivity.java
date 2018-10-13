@@ -7,6 +7,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.ErrorCodes;
@@ -45,17 +46,12 @@ public class LoginActivity extends AppCompatActivity {
         if (user != null) {
             startActivity(new Intent(getApplicationContext(), MainActivity.class));
         } else {
-            startActivityForResult(
-                    AuthUI.getInstance().
-                            createSignInIntentBuilder().
-                            setIsSmartLockEnabled(false, true).
-                            setAvailableProviders(
-                                    Arrays.asList(
-                                            new AuthUI.IdpConfig.GoogleBuilder().build(),
-                                            new AuthUI.IdpConfig.EmailBuilder().build())).
-                            setLogo(R.mipmap.cloud_logo_with_txt).
-                            setTheme(R.style.GreenTheme).build(),
-                    RC_SIGN_IN);
+            startActivityForResult(AuthUI.getInstance().
+                    createSignInIntentBuilder().
+                    setIsSmartLockEnabled(false, true).
+                    setAvailableProviders(Arrays.asList(new AuthUI.IdpConfig.GoogleBuilder().build(), new AuthUI.IdpConfig.EmailBuilder().build())).
+                    setLogo(R.mipmap.cloud_logo_with_txt).
+                    setTheme(R.style.GreenTheme).build(), RC_SIGN_IN);
         }
     }
 
@@ -79,6 +75,7 @@ public class LoginActivity extends AppCompatActivity {
 
                 if (response.getError().getErrorCode() == ErrorCodes.NO_NETWORK) {
                     showSnackbar(R.string.no_internet_connection);
+                    getSupportFragmentManager().beginTransaction().replace(R.id.loginFramlayout, new OfflineFragment()).commit();
                     return;
                 }
 
@@ -92,5 +89,9 @@ public class LoginActivity extends AppCompatActivity {
         String status = getResources().getString(msgCode);
         Snackbar snackbar = Snackbar.make(coordinatorLayout, status, Snackbar.LENGTH_LONG);
         snackbar.show();
+    }
+
+    public void restartapps(View view) {
+        this.recreate();
     }
 }

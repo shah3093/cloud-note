@@ -7,4 +7,11 @@
     android:id="@+id/login_coordinatorLayout"
     tools:context=".LoginActivity">
 
+    <FrameLayout
+        android:id="@+id/loginFramlayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+    </FrameLayout>
+
 </android.support.design.widget.CoordinatorLayout>

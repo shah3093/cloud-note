@@ -48,8 +48,6 @@ public class Categories extends Fragment {
 
         recyclerView = view.findViewById(R.id.recyclerID);
         setUpRecycleView();
-        
-
         return view;
     }
 
@@ -67,7 +65,7 @@ public class Categories extends Fragment {
 
         }
 
-        categoryAdapter = new CategoriesAdapter(getActivity(),categoryData);
+        categoryAdapter = new CategoriesAdapter(getActivity(), categoryData);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 2));
         recyclerView.setAdapter(categoryAdapter);
