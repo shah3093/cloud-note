@@ -1,5 +1,8 @@
 package net.smimran.cloudnote;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -80,7 +83,7 @@ public class UpdateNoteActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.add_note_menu, menu);
+        inflater.inflate(R.menu.update_note_menu, menu);
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -92,6 +95,16 @@ public class UpdateNoteActivity extends AppCompatActivity {
                 return true;
             case android.R.id.home:
                 finish();
+                break;
+            case R.id.shareNoteID:
+                Intent shareintent = new Intent();
+                shareintent.setAction(Intent.ACTION_SEND);
+                shareintent.putExtra(Intent.EXTRA_TEXT, category.getText().toString());
+                shareintent.setType("text/plan");
+                startActivity(shareintent);
+                break;
+            case R.id.deleteNoteID:
+                deletenote();
                 break;
             default:
                 return super.onOptionsItemSelected(item);
@@ -110,17 +123,47 @@ public class UpdateNoteActivity extends AppCompatActivity {
             return;
         }
 
-        Map<String,Object> note = new HashMap <>();
-        note.put("category",categoryStr);
-        note.put("description",descriptionStr);
-        note.put("update_at",date);
+        Map <String, Object> note = new HashMap <>();
+        note.put("category", categoryStr);
+        note.put("description", descriptionStr);
+        note.put("update_at", date);
 
 
         FirebaseUser user = auth.getCurrentUser();
         db.document(user.getUid() + "/" + noteid).update(note);
 
-        Toast.makeText(this,"Note updted",Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "Note updted", Toast.LENGTH_SHORT).show();
         finish();
+    }
+
+    public void deletenote() {
+        AlertDialog.Builder builder1 = new AlertDialog.Builder(this);
+        builder1.setTitle("Delete Note ");
+        builder1.setMessage("Are you sure ? ");
+        builder1.setCancelable(true);
+
+        builder1.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+            FirebaseUser user = auth.getCurrentUser();
+
+            public void onClick(DialogInterface dialog, int id) {
+                db.document(user.getUid() + "/" + noteid).delete().addOnSuccessListener(new OnSuccessListener <Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Toast.makeText(getApplicationContext(), "Note deleted ", Toast.LENGTH_SHORT).show();
+                        finish();
+                    }
+                });
+            }
+        });
+
+        builder1.setNegativeButton("No", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                dialog.cancel();
+            }
+        });
+
+        AlertDialog alert11 = builder1.create();
+        alert11.show();
     }
 
 }

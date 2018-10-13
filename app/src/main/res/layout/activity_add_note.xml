@@ -10,24 +10,26 @@
 
 
     <AutoCompleteTextView
+        android:layout_marginTop="5dp"
         android:id="@+id/category"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:completionThreshold="1"
         android:dropDownAnchor="@id/description"
-        android:hint="Category"
+        android:hint="Category name"
+        android:padding="12dp"
         android:popupBackground="#dcf2c6"
-        android:padding="10dp"
-        android:textSize="25sp" />
+       />
 
     <EditText
         android:id="@+id/description"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="12dp"
+        android:paddingLeft="12dp"
+        android:paddingRight="12dp"
+        android:paddingBottom="12dp"
         android:background="@color/fui_transparent"
-        android:hint="Note"
+        android:hint="write note here"
         android:inputType="textMultiLine|textWebEditText"
-        android:textSize="20dp" />
+        />
 
 </LinearLayout>

@@ -15,12 +15,14 @@ import android.widget.Toast;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
@@ -53,13 +55,13 @@ public class Categories extends Fragment {
 
 
     public void setRecyclerView2() {
-        FirebaseUser user = auth.getCurrentUser();
+        final FirebaseUser user = auth.getCurrentUser();
         db.collection(user.getUid()).get().addOnSuccessListener(new OnSuccessListener <QuerySnapshot>() {
             int dontAdd;
             ArrayList <String> categoriesList = new ArrayList <String>();
             int indexCounter;
 
-            Map <String, Object> categoryDatatmp = new HashMap <>();
+            Map <String, Object> categoryDatatmp;
 
             ArrayList <Map <String, Object>> categoryData = new ArrayList <Map <String, Object>>();
 
@@ -67,6 +69,8 @@ public class Categories extends Fragment {
             public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
 
                 for (DocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
+
+                    categoryDatatmp = new HashMap <>();
 
                     Note note = documentSnapshot.toObject(Note.class);
                     dontAdd = 0;

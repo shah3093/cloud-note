@@ -43,7 +43,6 @@ public class CategoriesAdapter extends RecyclerView.Adapter <CategoriesAdapter.C
     public void onBindViewHolder(@NonNull final CategoryHolder categoryHolder, int i) {
         categoryDatatmpA = categoryDataA.get(i);
         categoryHolder.category.setText(categoryDatatmpA.get("category").toString());
-        categoryHolder.noteNumber.setText(categoryDatatmpA.get("numberofnote").toString());
 
         ViewGroup.MarginLayoutParams marginLayoutParams =
                 (ViewGroup.MarginLayoutParams) categoryHolder.itemView.getLayoutParams();
@@ -73,12 +72,11 @@ public class CategoriesAdapter extends RecyclerView.Adapter <CategoriesAdapter.C
 
     class CategoryHolder extends RecyclerView.ViewHolder {
 
-        TextView category,noteNumber;
+        TextView category;
 
         public CategoryHolder(@NonNull View itemView) {
             super(itemView);
             category = itemView.findViewById(R.id.categoriesTitle_ID);
-            noteNumber = itemView.findViewById(R.id.noteNumberID);
         }
     }
 }

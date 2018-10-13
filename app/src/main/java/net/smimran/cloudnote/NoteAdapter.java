@@ -33,7 +33,7 @@ public class NoteAdapter extends FirestoreRecyclerAdapter <Note, NoteAdapter.Not
     }
 
     @Override
-    protected void onBindViewHolder(@NonNull final NoteHolder holder, final int position, @NonNull Note model){
+    protected void onBindViewHolder(@NonNull final NoteHolder holder, final int position, @NonNull Note model) {
         holder.category.setText(model.getCategory());
         holder.description.setText(model.getDescription());
         holder.createdate.setText(model.getCreated_at());
@@ -68,7 +68,7 @@ public class NoteAdapter extends FirestoreRecyclerAdapter <Note, NoteAdapter.Not
             @Override
             public void onClick(View view) {
                 String data = holder.category.getText().toString();
-                ((MainActivity)context).callCategoryFragment(data);
+                ((MainActivity) context).callCategoryFragment(data);
             }
         });
 
@@ -76,13 +76,23 @@ public class NoteAdapter extends FirestoreRecyclerAdapter <Note, NoteAdapter.Not
             @Override
             public void onClick(View view) {
                 String noteid = getSnapshots().getSnapshot(position).getReference().getId();
-                Intent intent = new Intent(context,UpdateNoteActivity.class);
-                intent.putExtra("NOTEID",noteid);
+                Intent intent = new Intent(context, UpdateNoteActivity.class);
+                intent.putExtra("NOTEID", noteid);
                 context.startActivity(intent);
             }
         });
-    }
 
+        holder.sharebtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent shareintent = new Intent();
+                shareintent.setAction(Intent.ACTION_SEND);
+                shareintent.putExtra(Intent.EXTRA_TEXT, holder.description.getText().toString());
+                shareintent.setType("text/plan");
+                context.startActivity(shareintent);
+            }
+        });
+    }
 
 
     @NonNull
@@ -95,7 +105,7 @@ public class NoteAdapter extends FirestoreRecyclerAdapter <Note, NoteAdapter.Not
     class NoteHolder extends RecyclerView.ViewHolder {
 
         TextView createdate, description, category;
-        ImageButton deletebtn;
+        ImageButton deletebtn, sharebtn;
 
         public NoteHolder(@NonNull final View itemView) {
             super(itemView);
@@ -104,9 +114,7 @@ public class NoteAdapter extends FirestoreRecyclerAdapter <Note, NoteAdapter.Not
             category = itemView.findViewById(R.id.categoryID);
 
             deletebtn = itemView.findViewById(R.id.deletebtn);
-
-
-
+            sharebtn = itemView.findViewById(R.id.sharebtnid);
         }
     }
 }
