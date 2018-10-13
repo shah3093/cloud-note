@@ -3,6 +3,8 @@
 
     <string name="no_internet">  You have to sign in via internet. After sign in you can work in offline and online.  </string>
 
+    <string name="no_data">We do not found any note of your.</string>
+
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
 

@@ -15,8 +15,8 @@
         app:cardCornerRadius="10dp">
 
         <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_width="wrap_content"
+            android:layout_height="120dp"
             android:gravity="center">
 
             <TextView
@@ -27,6 +27,33 @@
                 android:gravity="center"
                 android:text=" Bangladesh "
                 android:textStyle="bold" />
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="bottom"
+            android:layout_marginBottom="15dp"
+            >
+
+            <TextView
+                android:id="@+id/noteNumberID"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_marginLeft="8dp"
+                android:text="Note : 12"
+                android:textSize="22sp"/>
+
+            <ImageButton
+                android:id="@+id/viewDetailsID"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:background="@color/fui_transparent"
+                android:layout_marginRight="8dp"
+                android:src="@drawable/ic_right"/>
 
         </RelativeLayout>
 

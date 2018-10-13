@@ -38,6 +38,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private DrawerLayout drawerLayout;
     NavigationView navigationView;
 
+    TextView nodatatxtview;
+
     private FirebaseAuth auth;
 
 
@@ -47,18 +49,22 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     protected void onStart() {
         super.onStart();
         loadCategoryNameintoCategoriesList();
+        checkDataisempltyornot();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         loadCategoryNameintoCategoriesList();
+        checkDataisempltyornot();
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        nodatatxtview = findViewById(R.id.nodataID);
 
         Toolbar toolbar = findViewById(R.id.toolBar);
         setSupportActionBar(toolbar);
@@ -109,10 +115,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 callAddActivity((View) item.getActionView());
                 break;
             case R.id.allNote_nav:
+                checkDataisempltyornot();
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new AllNote()).commit();
                 navigationView.setCheckedItem(R.id.allNote_nav);
                 break;
             case R.id.categories_nav:
+                checkDataisempltyornot();
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new Categories()).commit();
                 navigationView.setCheckedItem(R.id.categories_nav);
                 break;
@@ -179,6 +187,20 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     if (dontAdd == 0) {
                         MainActivity.categoriesList.add(note.getCategory().trim());
                     }
+                }
+            }
+        });
+    }
+
+    public void checkDataisempltyornot(){
+        FirebaseUser user = auth.getCurrentUser();
+        db.collection(user.getUid()).get().addOnSuccessListener(new OnSuccessListener <QuerySnapshot>() {
+            @Override
+            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                if (queryDocumentSnapshots.size() <= 0){
+                    nodatatxtview.setVisibility(View.VISIBLE);
+                }else{
+                    nodatatxtview.setVisibility(View.GONE);
                 }
             }
         });

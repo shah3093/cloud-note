@@ -28,6 +28,16 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
 
+        <TextView
+            android:id="@+id/nodataID"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAlignment="center"
+            style="@style/Base.TextAppearance.AppCompat.Large"
+            android:layout_gravity="center"
+           android:visibility="gone"
+            android:text="@string/no_data"/>
+
     </android.support.design.widget.CoordinatorLayout>
 
 

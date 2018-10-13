@@ -10,12 +10,17 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
@@ -33,11 +38,6 @@ public class Categories extends Fragment {
 
     RecyclerView recyclerView;
 
-    public int indexCounter;
-
-    public Map <String, Object> categoryDatatmp;
-
-    public ArrayList <Map <String, Object>> categoryData = new ArrayList <Map <String, Object>>();
 
     @Nullable
     @Override
@@ -47,27 +47,90 @@ public class Categories extends Fragment {
         View view = inflater.inflate(R.layout.fragment_categories, container, false);
 
         recyclerView = view.findViewById(R.id.recyclerID);
-        setUpRecycleView();
+        setRecyclerView2();
         return view;
     }
 
 
-    public void setUpRecycleView() {
+    public void setRecyclerView2() {
         FirebaseUser user = auth.getCurrentUser();
+        db.collection(user.getUid()).get().addOnSuccessListener(new OnSuccessListener <QuerySnapshot>() {
+            int dontAdd;
+            ArrayList <String> categoriesList = new ArrayList <String>();
+            int indexCounter;
 
-        for (int i = 0; i < MainActivity.categoriesList.size(); i++) {
+            Map <String, Object> categoryDatatmp = new HashMap <>();
 
-            categoryDatatmp = new HashMap <>();
-            categoryDatatmp.put("numberofnote", "5");
-            categoryDatatmp.put("category", MainActivity.categoriesList.get(i));
+            ArrayList <Map <String, Object>> categoryData = new ArrayList <Map <String, Object>>();
 
-            categoryData.add(categoryDatatmp);
+            @Override
+            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
 
-        }
+                for (DocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
 
-        categoryAdapter = new CategoriesAdapter(getActivity(), categoryData);
-        recyclerView.setHasFixedSize(true);
-        recyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 2));
-        recyclerView.setAdapter(categoryAdapter);
+                    Note note = documentSnapshot.toObject(Note.class);
+                    dontAdd = 0;
+
+                    for (int i = 0; i < categoriesList.size(); i++) {
+                        if (categoriesList.get(i).toLowerCase().trim().equals(note.getCategory().toLowerCase().trim())) {
+                            dontAdd = 1;
+                            break;
+                        }
+                    }
+
+                    if (dontAdd == 0) {
+                        categoriesList.add(note.getCategory().trim());
+                        categoryDatatmp.put("numberofnote", queryDocumentSnapshots.size());
+                        categoryDatatmp.put("category", note.getCategory());
+                        categoryData.add(categoryDatatmp);
+                    }
+                }
+
+                categoryAdapter = new CategoriesAdapter(getActivity(), categoryData);
+                recyclerView.setHasFixedSize(true);
+                recyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 2));
+                recyclerView.setAdapter(categoryAdapter);
+            }
+        });
+    }
+
+
+//    public void setUpRecycleView() {
+//        FirebaseUser user = auth.getCurrentUser();
+//
+//        for (int i = 0; i < MainActivity.categoriesList.size(); i++) {
+//
+//            categoryDatatmp = new HashMap <>();
+//            categoryDatatmp.put("numberofnote", "5");
+//            categoryDatatmp.put("category", MainActivity.categoriesList.get(i));
+//            categoryData.add(categoryDatatmp);
+//
+//        }
+//
+//        categoryAdapter = new CategoriesAdapter(getActivity(), categoryData);
+//        recyclerView.setHasFixedSize(true);
+//        recyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 2));
+//        recyclerView.setAdapter(categoryAdapter);
+//    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        FirebaseUser user = auth.getCurrentUser();
+        db.collection(user.getUid()).addSnapshotListener(getActivity(), new EventListener <QuerySnapshot>() {
+            @Override
+            public void onEvent(@javax.annotation.Nullable QuerySnapshot queryDocumentSnapshots, @javax.annotation.Nullable FirebaseFirestoreException e) {
+                if (e != null) {
+                    Toast.makeText(getActivity(), "Error while loading!", Toast.LENGTH_SHORT).show();
+                    return;
+                } else {
+                    if (queryDocumentSnapshots.isEmpty()) {
+
+                    } else {
+                        setRecyclerView2();
+                    }
+                }
+            }
+        });
     }
 }

@@ -13,10 +13,12 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QuerySnapshot;
 
 public class AllNote extends Fragment {
 
@@ -48,7 +50,7 @@ public class AllNote extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         auth = FirebaseAuth.getInstance();
 
-        View view = inflater.inflate(R.layout.fragment_all_note,container,false);
+        View view = inflater.inflate(R.layout.fragment_all_note, container, false);
 
         recyclerView = view.findViewById(R.id.recyclerID);
         setUpRecycleView();
@@ -62,14 +64,16 @@ public class AllNote extends Fragment {
         FirebaseUser user = auth.getCurrentUser();
         Query query = db.collection(user.getUid());
 
-        FirestoreRecyclerOptions<Note> options = new FirestoreRecyclerOptions.Builder<Note>()
+        FirestoreRecyclerOptions <Note> options = new FirestoreRecyclerOptions.Builder <Note>()
                 .setQuery(query, Note.class).build();
 
-        noteAdapter = new NoteAdapter(options, getActivity());
 
+        noteAdapter = new NoteAdapter(options, getActivity());
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.setAdapter(noteAdapter);
+
+
     }
 
     public void callAddActivity(View view) {
